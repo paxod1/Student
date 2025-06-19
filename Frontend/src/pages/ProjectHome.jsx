@@ -124,13 +124,13 @@ function ProjectHome() {
   }
 
   // Effect to set student ID and show ad when login info changes
-  // useEffect(() => {
-  //   setLoading(true);
-  //   showAd()
-  //   if (logininfom) {
-  //     setTraining_id(logininfom.trainingIdArrayProject[0]);
-  //   }
-  // }, [logininfom]);
+  useEffect(() => {
+    setLoading(true);
+    showAd()
+    if (logininfom) {
+      setTraining_id(logininfom.trainingIdArrayProject[0]);
+    }
+  }, [logininfom]);
 
 
   // Effect to fetch bill and student data when training_id or active section changes
