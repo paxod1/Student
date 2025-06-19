@@ -10,7 +10,7 @@ const getTokenFromLocalStorage = () => {
 };
 
 // Base URL for both instances
-const SampleUrl = 'https://studentsmangement.onrender.com';
+const SampleUrl = 'http://localhost:5000';
 // https://studentsmangement.onrender.com
 // http://localhost:5000
 
