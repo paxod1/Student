@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
                 const query = 'SELECT * FROM tbl_project_student WHERE email = ?';
                 var [results3] = await db.query(query, [username])
                 console.log(results3[0].pro_stud_id);
-                const token = jwt.sign({ id: user.id }, process.env.seckey, { expiresIn: '100d' });
+                const token = jwt.sign({ id: user.id }, process.env.seckey, { expiresIn: '1m' });
                 console.log("login sucess");
                  const querytofindTrainingIds = 'SELECT * FROM tbl_project WHERE pro_stud_id = ?';
                 var [results4] = await db.query(querytofindTrainingIds, [results3[0].pro_stud_id]);
@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
                 const trainingIdArray = results2.map(item => item.training_id);
 
                 console.log("All training IDs for student_id:", trainingIdArray);
-                const token = jwt.sign({ id: user.id }, process.env.seckey, { expiresIn: '100d' });
+                const token = jwt.sign({ id: user.id }, process.env.seckey, { expiresIn: '1m' });
                 console.log("login sucess");
                 return res.status(200).json({ student_id: results1[0].student_id, token, trainingIdArray });
             }

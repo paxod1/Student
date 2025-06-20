@@ -17,15 +17,14 @@ class ErrorBoundary extends React.Component {
         console.error("Error caught by ErrorBoundary:", error, info);
         // Logout the user on any error
         this.props.dispatch(LogoutData());
-
     }
 
     render() {
         if (this.state.hasError) {
             // You can render any custom fallback UI
-            return <h2>Something went wrong. Logging out...</h2>;
+            return <h2>Something went wrong. Logging out... Refresh The Page...</h2>;
         }
-        window.location.reload();
+    
         return this.props.children;
     }
 }
