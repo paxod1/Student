@@ -14,44 +14,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import ProjectHome from './pages/ProjectHome';
 import ProjectProtect from './components/ProjectProtect';
 import { LogoutData } from './Redux/UserSlice';
-
+import ErrorBoundary from './components/ErrorBoundary';
 
 
 function App() {
-  
-
-
   const loginInfo = useSelector((state) => state.userlogin?.LoginInfo?.[0]);
-  console.log("from app.jsx", loginInfo);
-
   const id = loginInfo?.pro_stud_id;
-  console.log("from app.jsx", id);
-  var dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (loginInfo) {
-      if (!loginInfo.trainingIdArray[0]) {
-        dispatch(LogoutData())
-        window.location.reload();
-      }
+    if (loginInfo && (!loginInfo.pro_stud_id && !loginInfo.student_id)) {
+      dispatch(LogoutData());
     }
-
-  }, [])
-
-
+  }, [loginInfo]);
 
   return (
-    <div>
-
-
-
-
+    <ErrorBoundary> 
       <Router>
         <Routes>
-          {/* Public Route */}
           <Route path='/login' element={<Login />} />
-
-          {/* Protected Routes Wrapper */}
           <Route element={<UserProtect />}>
             <Route path='/' element={id ? <ProjectHome /> : <Home />} />
             <Route path='/ClassVideo' element={<ClassVideo />} />
@@ -59,15 +40,13 @@ function App() {
             <Route path='/Aptitude' element={<Aptitude />} />
             <Route path='/TaskReply' element={<TaskReply />} />
           </Route>
-          {/* project Protected Routes Wrapper */}
           <Route element={<ProjectProtect />}>
             <Route path='/' element={id ? <ProjectHome /> : <Home />} />
           </Route>
         </Routes>
       </Router>
-
       <ToastContainer />
-    </div>
+    </ErrorBoundary>
   );
 }
 
