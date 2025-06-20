@@ -34,13 +34,13 @@ router.post('/login', async (req, res) => {
                 console.log(results3[0].pro_stud_id);
                 const token = jwt.sign({ id: user.id }, process.env.seckey, { expiresIn: '7d' });
                 console.log("login sucess");
-                 const querytofindTrainingIds = 'SELECT * FROM tbl_project WHERE pro_stud_id = ?';
+                const querytofindTrainingIds = 'SELECT * FROM tbl_project WHERE pro_stud_id = ?';
                 var [results4] = await db.query(querytofindTrainingIds, [results3[0].pro_stud_id]);
                 console.log(results4);
-                
+
                 // Extract only the training_id values into an array
                 var trainingIdArrayProject = results4.map(item => item.project_id);
-                return res.status(200).json({ pro_stud_id: results3[0].pro_stud_id, token,trainingIdArrayProject });
+                return res.status(200).json({ pro_stud_id: results3[0].pro_stud_id, token, trainingIdArrayProject });
 
             } else {
                 const query = 'SELECT * FROM tbl_student WHERE email = ?';
@@ -398,35 +398,37 @@ router.get('/getAptitude', verifyToken, async (req, res) => {
 
 // Add aptitude mark for a student
 router.post('/addaptitudemark', verifyToken, async (req, res) => {
-    const { student_id, aptitude, month } = req.body;
+    const { student_id, aptitude, month, training_id } = req.body;
     console.log("Received body:", req.body);
 
     //  Updated validation (allows 0 as valid value)
     if (
         student_id === undefined ||
         aptitude === undefined ||
-        month === undefined
+        month === undefined ||
+        training_id == undefined
     ) {
         return res.status(400).json('student_id, aptitude, and month are required');
     }
 
     const parsedStudentId = parseInt(student_id);
     const parsedMark = parseFloat(aptitude);
+    const trainingId = parseFloat(training_id)
 
     if (isNaN(parsedStudentId) || isNaN(parsedMark)) {
         return res.status(400).json('Invalid student_id or aptitude');
     }
 
     const query = `
-        INSERT INTO tbl_review (student_id, aptitude, month)
-        VALUES (?, ?, ?)
+        INSERT INTO tbl_review (student_id, aptitude, month,training_id)
+        VALUES (?, ?, ?,?)
         ON DUPLICATE KEY UPDATE 
             aptitude = VALUES(aptitude),
             month = VALUES(month)
     `;
 
     try {
-        const [result] = await db.query(query, [parsedStudentId, parsedMark, month]);
+        const [result] = await db.query(query, [parsedStudentId, parsedMark, month, trainingId]);
         return res.status(200).json({ message: 'Aptitude mark saved successfully' });
     } catch (err) {
         console.error("Database insert error:", err.message);
@@ -601,7 +603,7 @@ router.post('/addreferencedata', verifyToken, async (req, res) => {
 
     try {
         console.log("hi");
-        
+
         const [result] = await db.query(query, [
             parsedTrainingId,
             parsedStudentId,
@@ -611,7 +613,7 @@ router.post('/addreferencedata', verifyToken, async (req, res) => {
             parsedEarnings
         ]);
         console.log('Reference data saved successfully');
-        
+
         return res.status(200).json({ message: 'Reference data saved successfully' });
     } catch (err) {
         console.error("Database insert error:", err.message);

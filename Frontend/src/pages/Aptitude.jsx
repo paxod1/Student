@@ -104,7 +104,6 @@ function Aptitude() {
         } catch (err) {
             console.error("Failed to process completed tests:", err);
         }
-
         setLoading(false);
     }
 
@@ -167,7 +166,8 @@ function Aptitude() {
             const response = await TokenRequest.post('/student/addaptitudemark', {
                 student_id: logininfom.student_id,
                 aptitude: total,
-                month: monthName
+                month: monthName,
+                training_id: logininfom.selectedTrainingId ? logininfom.selectedTrainingId : logininfom.trainingIdArray[0]
             });
             console.log('Aptitude mark saved successfully:', response.data);
             fetchQuestions()
