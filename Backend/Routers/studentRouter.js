@@ -60,7 +60,6 @@ router.post('/login', async (req, res) => {
                 return res.status(200).json({ student_id: results1[0].student_id, token, trainingIdArray });
             }
 
-
         }
     } catch (err) {
         console.error('Error querying database:', err);
