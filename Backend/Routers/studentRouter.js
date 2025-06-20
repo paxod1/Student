@@ -57,9 +57,8 @@ router.post('/login', async (req, res) => {
                 console.log("All training IDs for student_id:", trainingIdArray);
                 const token = jwt.sign({ id: user.id }, process.env.seckey, { expiresIn: '7d' });
                 console.log("login sucess");
-                return res.status(200).json({ student_id: results1[0].student_id, token, trainingIdArray });
+                return res.status(200).json({ student_id: results1[0].student_id, token });
             }
-
 
         }
     } catch (err) {
