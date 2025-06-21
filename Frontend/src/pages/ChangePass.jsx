@@ -26,6 +26,7 @@ function ChangePass() {
         console.log(res.data[0]);
 
         setStudentData(res.data[0]);
+        setAddress(res.data[0].address)
       } catch (err) {
         toast.error("Failed to fetch details");
       }
@@ -54,11 +55,14 @@ function ChangePass() {
   }
 
   async function handleUpdateDetails() {
+    setLoading(true);
     try {
       const res = await TokenRequest.put('/student/updatedata', { address, student_id });
       toast.success(res.data.message || "Updated successfully");
+      setLoading(false);
     } catch (err) {
       toast.error("Failed to update details.");
+      setLoading(false);
     }
   }
 
@@ -100,12 +104,14 @@ function ChangePass() {
           <textarea
             type="text"
             id="address"
-            value={studentData.address || ''}
+            value={address || ''}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Enter new address"
           />
 
-          <button onClick={handleUpdateDetails}>Update Address</button>
+          <button onClick={handleUpdateDetails}>
+            {loading ? 'Updating...' : 'Update Address'}
+          </button>
         </div>
 
 
