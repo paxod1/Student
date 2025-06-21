@@ -13,6 +13,7 @@ function ChangePass() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  var [address, setAddress] = useState('')
 
   const logininfom = useSelector((state) => state.userlogin?.LoginInfo[0]);
   const student_id = logininfom?.student_id;
@@ -23,7 +24,7 @@ function ChangePass() {
       try {
         const res = await TokenRequest.get(`/student/getstudent?student_id=${student_id}`);
         console.log(res.data[0]);
-        
+
         setStudentData(res.data[0]);
       } catch (err) {
         toast.error("Failed to fetch details");
@@ -54,7 +55,7 @@ function ChangePass() {
 
   async function handleUpdateDetails() {
     try {
-      const res = await TokenRequest.put('/student/updatedata', { ...studentData, student_id });
+      const res = await TokenRequest.put('/student/updatedata', { address, student_id });
       toast.success(res.data.message || "Updated successfully");
     } catch (err) {
       toast.error("Failed to update details.");
@@ -80,12 +81,34 @@ function ChangePass() {
         {/* Details Update */}
         <div className="update-box">
           <h3>Update Student Details</h3>
-          <input value={studentData.name || ''} onChange={(e) => setStudentData({ ...studentData, name: e.target.value })} placeholder="Full Name" />
-          <input value={studentData.email || ''} onChange={(e) => setStudentData({ ...studentData, email: e.target.value })} placeholder="Email" />
-          <input value={studentData.mobile_num || ''} onChange={(e) => setStudentData({ ...studentData, mobile_num: e.target.value })} placeholder="Mobile Number" />
-          <input value={studentData.address || ''} onChange={(e) => setStudentData({ ...studentData, address: e.target.value })} placeholder="Address" />
-          <button onClick={handleUpdateDetails}>Update Details</button>
+
+          <p><strong>Name:</strong> {studentData.name}</p>
+          <p><strong>Email:</strong> {studentData.email}</p>
+          <p><strong>Mobile Number:</strong> {studentData.mobile_num}</p>
+          <p><strong>WhatsApp Number:</strong> {studentData.whatsp_num}</p>
+          <p><strong>Gender:</strong> {studentData.gender}</p>
+          <p><strong>Date of Birth:</strong> {studentData.dob}</p>
+          <p><strong>Aadhar Number:</strong> {studentData.aadhar_num}</p>
+          <p><strong>Guardian's Mobile:</strong> {studentData.guard_num}</p>
+          <p><strong>Guardian's Name:</strong> {studentData.gaurdian_name}</p>
+          <p><strong>Relation:</strong> {studentData.relation}</p>
+          <p><strong>Qualification:</strong> {studentData.qualification}</p>
+          <p><strong>Pincode:</strong> {studentData.pincode}</p>
+
+          {/* Editable address input */}
+          <label htmlFor="address"><strong>Address:</strong></label>
+          <textarea
+            type="text"
+            id="address"
+            value={studentData.address || ''}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Enter new address"
+          />
+
+          <button onClick={handleUpdateDetails}>Update Address</button>
         </div>
+
+
 
         {/* Password Update */}
         <div className="update-box">

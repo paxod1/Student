@@ -267,7 +267,7 @@ router.get('/getdataAnnouncements', verifyToken, async (req, res) => {
 
     console.log(1);
 
-    console.log(batchname);
+    console.log(">>>>>>>>>>>>>>>>>", batchname);
     console.log(2);
     if (!batchname) {
         return res.status(400).json('batchname is required');
@@ -280,7 +280,7 @@ router.get('/getdataAnnouncements', verifyToken, async (req, res) => {
         console.log(results);
 
         console.log(4);
-        if (results.length === 0) {
+        if (results.length === 0 || results == []) {
             console.log(5);
             return res.status(404).json('No announcements found for this batch');
         }
@@ -639,6 +639,37 @@ router.get('/earnings', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
+// update details
+// Update only address using student_id
+router.put('/updatedata', verifyToken, async (req, res) => {
+    const { student_id, address } = req.body;
+
+    if (!student_id || !address) {
+        return res.status(400).json({ message: "student_id and address are required" });
+    }
+
+    const parsedStudentId = parseInt(student_id);
+    if (isNaN(parsedStudentId)) {
+        return res.status(400).json({ message: "Invalid student_id" });
+    }
+
+    const query = 'UPDATE tbl_student SET address = ? WHERE student_id = ?';
+
+    try {
+        const [result] = await db.query(query, [address, parsedStudentId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        return res.status(200).json({ message: "Address updated successfully" });
+    } catch (err) {
+        console.error("Update error:", err.message);
+        return res.status(500).json({ error: err.message });
+    }
+});
+
 
 
 

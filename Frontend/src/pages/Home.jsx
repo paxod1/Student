@@ -208,14 +208,17 @@ function Home() {
             }, 4000);
           }
 
-          if (batchName) {
+          if (batchname) {
 
             try {
               // Fetch both announcements in parallel
               const [generalResponse, personalResponse] = await Promise.allSettled([
-                TokenRequest.get(`/student/getdataAnnouncements?batchname=${batchName}`),
+                TokenRequest.get(`/student/getdataAnnouncements?batchname=${batchname}`),
                 TokenRequest.get(`/student/getdataAnnouncementsid?training_id=${training_id}`)
               ]);
+              console.log('>>>>>>>>>>>>>>>>>>>',generalResponse,personalResponse);
+              
+           
 
               // Process successful responses
               const generalAnnouncements = generalResponse.status === 'fulfilled'
@@ -239,10 +242,7 @@ function Home() {
             } catch (error) {
               console.warn("Error in announcement processing:", error);
               setHomeAnnouncement([
-                {
-                  title: "Connection issue",
-                  description: "We couldn't fetch announcements. Please try again later."
-                }
+                { title: "No announcements", description: "There are no announcements available at this time." }
               ]);
             }
           }
@@ -520,7 +520,7 @@ function Home() {
 
 
 
-                <Link to={'/ChangePass'} className='change_password_button' >Change Password</Link>
+                <Link to={'/ChangePass'} className='change_password_button' >Update Detials</Link>
 
                 <h3 onClick={logout} className='menus_right'><AiOutlineLogout />  </h3>
 

@@ -183,7 +183,7 @@ function ProjectHome() {
             console.error('Fetch error:', err);
           }
         };
-        
+
         // fetchEarnings()
       }
 
@@ -217,61 +217,63 @@ function ProjectHome() {
 
           setBatch(response.data);
 
-          const batchName = response.data[0]?.batch || 'No Batch Assigned';
-          setBatchname(batchName);
-          console.log('batch details>>>>>>>>>>>>>>>',response.data[0]?.batch);
-          
-          
-        var statuscheck = response.data[0].status
+          var group = response.data[0]?.pro_type || 'No Batch Assigned';
+          setBatchname(group);
+          console.log('batch details>>>>>>>>>>>>>>>', response.data[0]?.pro_type);
 
-        // Automatically logout if student is marked as DROPPED
-        if (statuscheck == 'DROPED') {
-          toast.error("Student Droped course!");
-          dispatch(LogoutData())
-          setTimeout(() => {
-            window.location.reload();
-          }, 4000);
-        }
 
-              if (batchName) {
+          var statuscheck = ' '
 
-                try {
-                  // Fetch both announcements in parallel
-                  const [generalResponse, personalResponse] = await Promise.allSettled([
-                    TokenRequest.get(`/student/getdataAnnouncements?batchname=${batchName}`),
-                    TokenRequest.get(`/student/getdataAnnouncementsid?training_id=360`)
-                  ]);
+          // Automatically logout if student is marked as DROPPED
+          if (statuscheck == 'DROPED') {
+            toast.error("Student Droped course!");
+            dispatch(LogoutData())
+            setTimeout(() => {
+              window.location.reload();
+            }, 4000);
+          }
 
-                  // Process successful responses
-                  const generalAnnouncements = generalResponse.status === 'fulfilled'
-                    ? generalResponse.value.data.slice(-4).reverse()
-                    : [];
+          if (group) {
 
-                  const personalAnnouncements = personalResponse.status === 'fulfilled'
-                    ? personalResponse.value.data.slice(-4).reverse()
-                    : [];
+            try {
+              // Fetch both announcements in parallel
+              const [generalResponse, personalResponse] = await Promise.allSettled([
+                TokenRequest.get(`/project/getdataAnnouncements?group=${group}`),
+                TokenRequest.get(`/student/getdataAnnouncementsid?training_id=374`)
+              ]);
+              console.log('>>>>>>>>>>>', generalResponse, personalResponse);
 
-                  // Combine announcements (personal first, then general)
-                  const mergedAnnouncements = [...personalAnnouncements, ...generalAnnouncements];
 
-                  // Handle empty state
-                  const finalAnnouncements = mergedAnnouncements.length > 0
-                    ? mergedAnnouncements.slice(0, 6)
-                    : [{ title: "No announcements", description: "There are no announcements available at this time." }];
+              // Process successful responses
+              const generalAnnouncements = generalResponse.status === 'fulfilled'
+                ? generalResponse.value.data.slice(-4).reverse()
+                : [];
 
-                  setHomeAnnouncement(finalAnnouncements);
+              const personalAnnouncements = personalResponse.status === 'fulfilled'
+                ? personalResponse.value.data.slice(-4).reverse()
+                : [];
 
-                } catch (error) {
-                  console.warn("Error in announcement processing:", error);
-                  setHomeAnnouncement([
-                    {
-                      title: "Connection issue",
-                      description: "We couldn't fetch announcements. Please try again later."
-                    }
-                  ]);
+              // Combine announcements (personal first, then general)
+              const mergedAnnouncements = [...personalAnnouncements, ...generalAnnouncements];
+
+              // Handle empty state
+              const finalAnnouncements = mergedAnnouncements.length > 0
+                ? mergedAnnouncements.slice(0, 6)
+                : [{ title: "No announcements", description: "There are no announcements available at this time." }];
+
+              setHomeAnnouncement(finalAnnouncements);
+
+            } catch (error) {
+              console.warn("Error in announcement processing:", error);
+              setHomeAnnouncement([
+                {
+                  title: "Connection issue",
+                  description: "We couldn't fetch announcements. Please try again later."
                 }
-              }
-              break;
+              ]);
+            }
+          }
+          break;
 
 
         //     case 'reviews':
@@ -286,31 +288,31 @@ function ProjectHome() {
         //       }
         //       break;
 
-        //     case 'attendance':
-        //       setActiveSection('attendance');
-        //       response = await TokenRequest.get(`/student/getdataattendance?training_id=${training_id}&year=${selectedYear}&month=${selectedMonth}`);
-        //       if (response.data.length === 0) {
-        //         setAttendance([]);
-        //         setFilteredAttendance([]);
-        //         setActiveSection(' ');
-        //         setNodata(true)
-        //       } else {
-        //         setAttendance(response.data);
-        //         setFilteredAttendance(response.data);
-        //       }
-        //       break;
-
-            case 'bill':
-              setActiveSection('bill');
-              response = await TokenRequest.get(`/project/getBillDetails?project_id=${logininfom.trainingIdArrayProject[0]}`);
+            case 'attendance':
+              setActiveSection('attendance');
+              response = await TokenRequest.get(`/project/getdataattendance?training_id=${training_id}&year=${selectedYear}&month=${selectedMonth}`);
               if (response.data.length === 0) {
-                setBill([]);
+                setAttendance([]);
+                setFilteredAttendance([]);
                 setActiveSection(' ');
                 setNodata(true)
               } else {
-                setBill(response.data);
+                setAttendance(response.data);
+                setFilteredAttendance(response.data);
               }
               break;
+
+        case 'bill':
+          setActiveSection('bill');
+          response = await TokenRequest.get(`/project/getBillDetails?project_id=${logininfom.trainingIdArrayProject[0]}`);
+          if (response.data.length === 0) {
+            setBill([]);
+            setActiveSection(' ');
+            setNodata(true)
+          } else {
+            setBill(response.data);
+          }
+          break;
 
         //     case 'material':
         //       setActiveSection('material');
@@ -324,46 +326,48 @@ function ProjectHome() {
         //       }
         //       break;
 
-        //     case 'announcement':
-        //       setActiveSection('announcement');
-        //       setLoading(true);
-        //       setNodata(false);
+        case 'announcement':
+          setActiveSection('announcement');
+          setLoading(true);
+          setNodata(false);
 
-        //       try {
-        //         // Fetch both endpoints in parallel
-        //         const [generalResponse, personalResponse] = await Promise.allSettled([
-        //           TokenRequest.get(`/student/getdataAnnouncements?batchname=${batchname}`),
-        //           TokenRequest.get(`/student/getdataAnnouncementsid?training_id=${training_id}`)
-        //         ]);
+          try {
+            // Fetch both endpoints in parallel
+            const [generalResponse, personalResponse] = await Promise.allSettled([
+              TokenRequest.get(`/project/getdataAnnouncements?group=${batchname}`),
+              TokenRequest.get(`/student/getdataAnnouncementsid?training_id=374`)
+            ]);
+            
+            
 
-        //         // Process responses
-        //         const generalAnnouncements = generalResponse.status === 'fulfilled'
-        //           ? generalResponse.value.data
-        //           : [];
+            // Process responses
+            const generalAnnouncements = generalResponse.status === 'fulfilled'
+              ? generalResponse.value.data
+              : [];
 
-        //         const personalAnnouncements = personalResponse.status === 'fulfilled'
-        //           ? personalResponse.value.data
-        //           : [];
+            const personalAnnouncements = personalResponse.status === 'fulfilled'
+              ? personalResponse.value.data
+              : [];
 
-        //         // Combine announcements (personal first)
-        //         const allAnnouncements = [...personalAnnouncements, ...generalAnnouncements];
+            // Combine announcements (personal first)
+            const allAnnouncements = [...personalAnnouncements, ...generalAnnouncements];
 
-        //         if (allAnnouncements.length === 0) {
-        //           setAnnouncement([]);
-        //           setPersonalAnn([]);
-        //           setNodata(true);
-        //         } else {
-        //           setAnnouncement(generalAnnouncements);
-        //           setPersonalAnn(personalAnnouncements);
-        //         }
+            if (allAnnouncements.length === 0) {
+              setAnnouncement([]);
+              setPersonalAnn([]);
+              setNodata(true);
+            } else {
+              setAnnouncement(generalAnnouncements);
+              setPersonalAnn(personalAnnouncements);
+            }
 
-        //       } catch (error) {
-        //         console.error("Error in announcement processing:", error);
-        //         setNodata(true);
-        //       } finally {
-        //         setLoading(false);
-        //       }
-        //       break;
+          } catch (error) {
+            console.error("Error in announcement processing:", error);
+            setNodata(true);
+          } finally {
+            setLoading(false);
+          }
+          break;
 
 
         //     case 'Project':
