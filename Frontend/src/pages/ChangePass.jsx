@@ -114,8 +114,6 @@ function ChangePass() {
           </button>
         </div>
 
-
-
         {/* Password Update */}
         <div className="update-box">
           <h3>Change Password</h3>

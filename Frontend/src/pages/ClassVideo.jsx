@@ -7,6 +7,7 @@ import { PlayCircle, PauseCircle, Volume2, Maximize, Minimize } from "lucide-rea
 import { useSelector } from 'react-redux';
 import Footer from "./Footer";
 import { TokenRequest } from "../AxiosCreate";
+import Add from "../components/Add";
 
 function ClassVideo() {
   const location = useLocation();
@@ -22,6 +23,7 @@ function ClassVideo() {
   const wrapperRef = useRef(null);
   const [activeVideoIndex, setActiveVideoIndex] = useState(null);
   const [showControls, setShowControls] = useState(true);
+  var [addTime, setAddTime] = useState(false)
 
   let inactivityTimeout = useRef(null);
   const logininfom = useSelector((state) => state.userlogin?.LoginInfo[0]);
@@ -42,6 +44,7 @@ function ClassVideo() {
         }
       }
       fetchVideos();
+      showAd()
     }
   }, [logininfom]);
 
@@ -123,8 +126,17 @@ function ClassVideo() {
     setActiveVideoIndex(index);
   };
 
+  function showAd() {
+    setTimeout(() => {
+      setAddTime(true)
+    }, 10000);
+  }
+
   return (
     <div>
+      {
+        addTime && <Add stopAd={setAddTime} />
+      }
       <section className="navbar_main_video">
         <div className="inner_div_nav_video">
           <div className="leftnav_video">
